@@ -7,7 +7,7 @@ function QuizList() {
   const [quizzes, setQuizzes] = useState([]);
 
   useEffect(() => {
-    axios.get('${process.env.REACT_APP_API_BASE_URL}/quizzes')
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/quizzes`)
       .then(response => setQuizzes(response.data))
       .catch(error => console.log(error));
   }, []);

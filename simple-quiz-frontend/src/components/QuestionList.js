@@ -7,7 +7,7 @@ function QuestionList() {
   const [questions, setQuestions] = useState([]);
 
   useEffect(() => {
-    axios.get('${process.env.REACT_APP_API_BASE_URL}/questions')
+    axios.get(`${process.env.REACT_APP_API_BASE_URL}/questions`)
       .then(response => {
         setQuestions(response.data);
       })
