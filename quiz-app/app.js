@@ -7,6 +7,7 @@ const questionRoutes = require('./routes/questionRoutes');
 
 const app = express();
 const cors = require('cors');
+
 app.use(cors());
 
 // Connect to MongoDB

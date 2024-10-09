@@ -85,7 +85,7 @@ For detailed API documentation, please refer to the API.md file in the backend d
    ```
    REACT_APP_API_URL=https://sdn-assignment-1.onrender.com
    ```
-   This points to the deployed backend API. For local development, you may want to use `http://localhost:3000` or whatever port your local backend runs on.
+   This points to the deployed backend API. For local development, you may want to use `${process.env.REACT_APP_API_BASE_URL}` or whatever port your local backend runs on.
 4. Start the development server: `npm start`
 
 ### Features

@@ -1,123 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Tab, Tabs } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import QuizList from './components/QuizList';
+import React from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
+import { Container, Navbar, Nav, Button } from 'react-bootstrap'; // Import Nav và Button từ react-bootstrap
 import QuestionList from './components/QuestionList';
-import QuizForm from './components/QuizForm';
-import QuestionForm from './components/QuestionForm';
-import { getQuizzes, getQuestions, createQuiz, updateQuiz, deleteQuiz, createQuestion, updateQuestion, deleteQuestion } from './services/api';
+import CreateQuestion from './components/CreateQuestion';
+import EditQuestion from './components/EditQuestion';
+import DisplayQuestion from './components/DisplayQuestion';
+import CreateQuiz from './components/CreateQuiz';
+import DisplayQuiz from './components/DisplayQuiz';
+import EditQuiz from './components/EditQuiz';
+import QuizList from './components/QuizList';
 
 function App() {
-  const [quizzes, setQuizzes] = useState([]);
-  const [questions, setQuestions] = useState([]);
-  const [editingQuiz, setEditingQuiz] = useState(null);
-  const [editingQuestion, setEditingQuestion] = useState(null);
-  const [activeTab, setActiveTab] = useState('quizzes');
-
-  useEffect(() => {
-    fetchQuizzes();
-    fetchQuestions();
-  }, []);
-
-  useEffect(() => {
-    setEditingQuiz(null);
-    setEditingQuestion(null);
-  }, [activeTab]);
-
-  const fetchQuizzes = async () => {
-    try {
-      const response = await getQuizzes();
-      setQuizzes(response.data);
-    } catch (error) {
-      console.error('Error fetching quizzes:', error);
-    }
-  };
-
-  const fetchQuestions = async () => {
-    try {
-      const response = await getQuestions();
-      setQuestions(response.data);
-    } catch (error) {
-      console.error('Error fetching questions:', error);
-    }
-  };
-
-  const handleQuizAction = async (action, id = null, quizData = null) => {
-    try {
-      switch (action) {
-        case 'create':
-          await createQuiz(quizData);
-          break;
-        case 'update':
-          await updateQuiz(id, quizData);
-          break;
-        case 'delete':
-          await deleteQuiz(id);
-          break;
-        default:
-          throw new Error('Invalid action');
-      }
-      fetchQuizzes();
-      setEditingQuiz(null);
-    } catch (error) {
-      console.error(`Error ${action}ing quiz:`, error);
-    }
-  };
-
-  const handleQuestionAction = async (action, id = null, questionData = null) => {
-    try {
-      switch (action) {
-        case 'create':
-          await createQuestion(questionData);
-          break;
-        case 'update':
-          await updateQuestion(id, questionData);
-          break;
-        case 'delete':
-          await deleteQuestion(id);
-          break;
-        default:
-          throw new Error('Invalid action');
-      }
-      fetchQuestions();
-      setEditingQuestion(null);
-    } catch (error) {
-      console.error(`Error ${action}ing question:`, error);
-    }
-  };
-
   return (
     <Container>
-      <Row>
-        <Col>
-          <Tabs activeKey={activeTab} onSelect={(tab) => setActiveTab(tab)}>
-            <Tab eventKey="quizzes" title="Quizzes">
-              <QuizList
-                quizzes={quizzes}
-                onEditQuiz={(id) => setEditingQuiz(quizzes.find(q => q._id === id))}
-                onDeleteQuiz={(id) => handleQuizAction('delete', id)}
-              />
-              <QuizForm 
-                quiz={editingQuiz}
-                onSubmit={(quizData) => handleQuizAction(editingQuiz ? 'update' : 'create', editingQuiz?._id, quizData)}
-                onCancel={() => setEditingQuiz(null)}
-              />
-            </Tab>
-            <Tab eventKey="questions" title="Questions">
-              <QuestionList
-                questions={questions}
-                onEditQuestion={(id) => setEditingQuestion(questions.find(q => q._id === id))}
-                onDeleteQuestion={(id) => handleQuestionAction('delete', id)}
-              />
-              <QuestionForm
-                question={editingQuestion}
-                onSubmit={(questionData) => handleQuestionAction(editingQuestion ? 'update' : 'create', editingQuestion?._id, questionData)}
-                onCancel={() => setEditingQuestion(null)}
-              />
-            </Tab>
-          </Tabs>
-        </Col>
-      </Row>
+      <Navbar  expand="lg">
+        <Navbar.Brand as={Link} to="/">Quiz App</Navbar.Brand>
+        <Nav className="ml-auto">
+          <Button as={Link} to="/quizzes" variant="outline-primary" className="mr-2">
+            Quizzes
+          </Button>
+          <Button as={Link} to="/questions" variant="outline-secondary">
+            Questions
+          </Button>
+        </Nav>
+      </Navbar>
+      <Routes>
+        <Route path="/quizzes" element={<QuizList />} />
+        <Route path="/quizzes/new" element={<CreateQuiz />} />
+        <Route path="/quizzes/:quizId" element={<DisplayQuiz />} />
+        <Route path="/quizzes/:quizId/edit" element={<EditQuiz />} />
+        <Route path="/questions" element={<QuestionList />} />
+        <Route path="/questions/new" element={<CreateQuestion />} />
+        <Route path="/questions/:id/edit" element={<EditQuestion />} />
+        <Route path="/questions/:id" element={<DisplayQuestion />} />
+      </Routes>
     </Container>
   );
 }

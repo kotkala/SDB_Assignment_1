@@ -1,21 +1,48 @@
-import React from 'react';
-import { ListGroup, Button } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { Card, Button } from 'react-bootstrap'; // Import Card and Button from react-bootstrap
 
-function QuizList({ quizzes, onEditQuiz, onDeleteQuiz }) {
+function QuizList() {
+  const [quizzes, setQuizzes] = useState([]);
+
+  useEffect(() => {
+    axios.get('${process.env.REACT_APP_API_BASE_URL}/quizzes')
+      .then(response => setQuizzes(response.data))
+      .catch(error => console.log(error));
+  }, []);
+
+  const handleDelete = (id) => {
+    axios.delete(`${process.env.REACT_APP_API_BASE_URL}/quizzes/${id}`)
+      .then(() => {
+        setQuizzes(quizzes.filter(quiz => quiz._id !== id));
+      })
+      .catch(error => console.log(error));
+  };
+
   return (
     <div>
-      <h2>Quizzes</h2>
-      <ListGroup>
+      <h1>Quizzes List</h1>
+      <Link to="/quizzes/new" className="btn btn-primary mb-3">Create New Quiz</Link>
+      <div className="list-group">
         {quizzes.map(quiz => (
-          <ListGroup.Item key={quiz._id} className="d-flex justify-content-between align-items-center">
-            {quiz.title}
-            <div>
-              <Button variant="warning" className="mr-2" onClick={() => onEditQuiz(quiz._id)}>Edit</Button>
-              <Button variant="danger" onClick={() => onDeleteQuiz(quiz._id)}>Delete</Button>
-            </div>
-          </ListGroup.Item>
+          <Card className="mb-3" key={quiz._id}>
+            <Card.Body className="d-flex justify-content-between align-items-center">
+              <Card.Title className="mb-0">
+                <Link to={`/quizzes/${quiz._id}`} style={{ color: 'blue', textDecoration: 'underline' }}>
+                  {quiz.title}
+                </Link>
+              </Card.Title>
+              <Button 
+                variant="danger" 
+                onClick={() => handleDelete(quiz._id)}
+              >
+                Delete
+              </Button>
+            </Card.Body>
+          </Card>
         ))}
-      </ListGroup>
+      </div>
     </div>
   );
 }
